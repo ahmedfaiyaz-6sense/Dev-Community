@@ -1,8 +1,9 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { CreateUserDTO } from './dto/user.createuser.dto';
 import { User } from './user.schema';
 import { UserService } from './user.service';
 import { LoginUserDTO } from './dto/user.loginuser.dto';
+import { AuthGuard } from '@nestjs/passport';
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
@@ -12,7 +13,15 @@ export class UserController {
   }
 
   @Post('/login')
-  loginUser(@Body() user: LoginUserDTO): Promise<User> {
+  loginUser(@Body() user: LoginUserDTO): Promise<{ access_token: string }> {
     return this.userService.loginUser(user);
+  }
+
+  ///test guard
+  @Get('/test')
+  @UseGuards(AuthGuard())
+  test(@Req() _req) {
+    console.log('GUARD WORKING: ');
+    //console.log(req);
   }
 }
