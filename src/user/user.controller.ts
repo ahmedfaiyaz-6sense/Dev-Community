@@ -21,7 +21,9 @@ export class UserController {
   @Get('/test')
   @UseGuards(AuthGuard())
   test(@Req() req) {
-    console.log('GUARD WORKING: ');
-    //console.log(req);
+    console.log('GUARD WORKING ');
+    return {
+      Authenticated: "true",
+    };
   }
 }
