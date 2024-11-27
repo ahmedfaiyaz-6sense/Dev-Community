@@ -20,7 +20,7 @@ export class UserController {
   ///test guard
   @Get('/test')
   @UseGuards(AuthGuard())
-  test(@Req() _req) {
+  test(@Req() req) {
     console.log('GUARD WORKING: ');
     //console.log(req);
   }
