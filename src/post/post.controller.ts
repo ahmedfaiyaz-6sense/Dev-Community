@@ -1,8 +1,9 @@
 import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { CreatePostDTO } from './dto/post.create_post.dto';
-import { UserPost } from './post.schema';
+//import { UserPost } from './post.schema';
 import { PostService } from './post.service';
 import { AuthGuard } from '@nestjs/passport';
+import { IUserPost } from './post.interface';
 
 @Controller('post')
 export class PostController {
@@ -13,7 +14,7 @@ export class PostController {
   async create_post(
     @Body() createPost: CreatePostDTO,
     @Req() req,
-  ): Promise<UserPost> {
+  ): Promise<IUserPost> {
     const user = req.user;
 
     return this.postService.createPost(createPost, user);
@@ -21,7 +22,7 @@ export class PostController {
 
   @Get('/user_posts')
   @UseGuards(AuthGuard())
-  async get_user_posts(@Req() req): Promise<UserPost[]> {
+  async get_user_posts(@Req() req): Promise<IUserPost[]> {
     const user = req.user;
     return this.postService.getUserPosts(user);
   }

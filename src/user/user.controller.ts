@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { CreateUserDTO } from './dto/user.createuser.dto';
-import { User } from './user.schema';
+import { IUser } from './user.interface';
 import { UserService } from './user.service';
 import { LoginUserDTO } from './dto/user.loginuser.dto';
 //import { AuthGuard } from '@nestjs/passport';
@@ -8,7 +8,7 @@ import { LoginUserDTO } from './dto/user.loginuser.dto';
 export class UserController {
   constructor(private userService: UserService) {}
   @Post('/signup')
-  createUser(@Body() user: CreateUserDTO): Promise<User> {
+  createUser(@Body() user: CreateUserDTO): Promise<IUser> {
     return this.userService.createUser(user);
   }
 

@@ -6,20 +6,21 @@ import {
 } from '@nestjs/common';
 import { CreateUserDTO } from './dto/user.createuser.dto';
 import { Model } from 'mongoose';
-import { User } from './user.schema';
+import { IUser } from './user.interface';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { LoginUserDTO } from './dto/user.loginuser.dto';
 import { JWTPayload } from './user.jwt.payload.interface';
 import { JwtService } from '@nestjs/jwt';
+import { User } from './user.schema';
 @Injectable()
 export class UserService {
   constructor(
-    @InjectModel(User.name) private readonly userModel: Model<User>,
+    @InjectModel(User.name) private readonly userModel: Model<IUser>,
     private jwtService: JwtService,
   ) {}
 
-  public async createUser(user: CreateUserDTO): Promise<User> {
+  public async createUser(user: CreateUserDTO): Promise<IUser> {
     const salt = await bcrypt.genSalt();
     const hashed_password = await bcrypt.hash(user.password, salt);
     user.password = hashed_password;
