@@ -24,6 +24,6 @@ export class PostService {
 
   public async getUserPosts(user: User): Promise<UserPost[]> {
     //console.log(user._id)
-    return await this.postModel.find({ autjhor: user._id });
+    return await this.postModel.find({ author: user._id });
   }
 }
