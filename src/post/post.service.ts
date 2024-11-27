@@ -3,12 +3,18 @@ import { InjectModel } from '@nestjs/mongoose';
 import { UserPost } from './post.schema';
 import { Model } from 'mongoose';
 import { CreatePostDTO } from './dto/post.create_post.dto';
-import { User } from 'src/user/user.schema';
+import { IUser } from 'src/user/user.interface';
+import { IUserPost } from './post.interface';
 
 @Injectable()
 export class PostService {
-  constructor(@InjectModel(UserPost.name) private postModel: Model<UserPost>) {}
-  public async createPost(post: CreatePostDTO, user: User): Promise<UserPost> {
+  constructor(
+    @InjectModel(UserPost.name) private postModel: Model<IUserPost>,
+  ) {}
+  public async createPost(
+    post: CreatePostDTO,
+    user: IUser,
+  ): Promise<IUserPost> {
     const new_post = {
       title: post.title,
       content: post.content,
@@ -22,7 +28,7 @@ export class PostService {
     return createdPost;
   }
 
-  public async getUserPosts(user: User): Promise<UserPost[]> {
+  public async getUserPosts(user: IUser): Promise<IUserPost[]> {
     //console.log(user._id)
     return await this.postModel.find({ author: user._id });
   }
