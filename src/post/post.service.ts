@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { CreatePostDTO } from './dto/post.create_post.dto';
 import { IUser } from 'src/user/user.interface';
 import { IUserPost } from './post.interface';
+import { GetPostFilterDto } from './dto/post.filter_post.dto';
 
 @Injectable()
 export class PostService {
@@ -31,5 +32,16 @@ export class PostService {
   public async getUserPosts(user: IUser): Promise<IUserPost[]> {
     //console.log(user._id)
     return await this.postModel.find({ author: user._id });
+  }
+  public async getFilteredPosts(
+    filter_post: GetPostFilterDto,
+  ): Promise<IUserPost[]> {
+    const { title, content } = filter_post;
+    if (title) {
+      return await this.postModel.findOne({ title });
+    }
+   
+    return await this.postModel.findOne({ content });
+    
   }
 }
