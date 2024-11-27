@@ -10,10 +10,13 @@ import { User } from './user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { LoginUserDTO } from './dto/user.loginuser.dto';
+import { JWTPayload } from './user.jwt.payload.interface';
+import { JwtService } from '@nestjs/jwt';
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<User>,
+    private jwtService: JwtService,
   ) {}
 
   public async createUser(user: CreateUserDTO): Promise<User> {
@@ -31,7 +34,9 @@ export class UserService {
       }
     }
   }
-  public async loginUser(user: LoginUserDTO): Promise<User> {
+  public async loginUser(
+    user: LoginUserDTO,
+  ): Promise<{ access_token: string }> {
     const found_user = await this.userModel.find({ username: user.username });
     if (!found_user.length) {
       throw new NotFoundException('Username or password is wrong');
@@ -40,7 +45,13 @@ export class UserService {
     if (!verify) {
       throw new NotFoundException('Username or password is wrong');
     } else {
-      return found_user[0];
+      const username = found_user[0].username;
+      //console.log(username);
+      const payload: JWTPayload = {
+        username,
+      };
+      const access_token = await this.jwtService.sign(payload);
+      return { access_token };
     }
   }
 }
