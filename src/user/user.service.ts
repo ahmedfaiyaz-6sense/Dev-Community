@@ -92,4 +92,32 @@ export class UserService {
       .select('-password');
     return updatedProfile;
   }
+  public async getAllPostsofAllUser() {
+    const pipelines = [
+      {
+        $lookup: {
+          from: 'userposts',
+          localField: '_id',
+          foreignField: 'author',
+          as: 'posts',
+        },
+      },
+
+      {
+        $lookup: {
+          from: 'comments',
+          localField: 'posts._id',
+          foreignField: 'from_post',
+          as: 'posts.comments',
+        },
+      },
+
+      {
+        $project: {
+          password: 0,
+        },
+      },
+    ];
+    return this.userModel.aggregate(pipelines);
+  }
 }

@@ -16,7 +16,7 @@ import { JWTStrategy } from './jwt.strategy';
     JwtModule.register({
       secret: process.env.SECRET,
       signOptions: {
-        expiresIn: 3600,
+        expiresIn: '2 days',
       },
     }),
   ],
