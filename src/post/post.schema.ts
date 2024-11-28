@@ -5,10 +5,10 @@ export type PostDocument = HydratedDocument<UserPost>;
 
 @Schema()
 export class UserPost {
-  @Prop()
+  @Prop({ type: String })
   title: string;
 
-  @Prop()
+  @Prop({ type: String })
   content: string;
 
   @Prop({ type: Types.ObjectId, ref: 'User' })
