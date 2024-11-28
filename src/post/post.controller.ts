@@ -1,7 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  Param,
+  Patch,
+  //Param,
   Post,
   // Query,
   // Req,
@@ -16,6 +20,7 @@ import { IUserPost } from './interfaces/post.interface';
 import { IUser } from 'src/user/interfaces/user.interface';
 import { GetUser } from 'src/user/decorators/user.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { UpdatePostDTO } from './dto/post.update_post.dto';
 
 @Controller('post')
 @ApiBearerAuth()
@@ -30,6 +35,21 @@ export class PostController {
     @GetUser() user: IUser,
   ): Promise<IUserPost> {
     return this.postService.createPost(createPost, user);
+  }
+
+  @Patch('/update-post/:postId')
+  @UseGuards(AuthGuard())
+  async update_post(
+    @Body() updatePostDTO: UpdatePostDTO,
+    @Param('postId') postId: string,
+  ) {
+    return this.postService.updatePost(updatePostDTO, postId);
+  }
+
+  @Delete('/delete-post/:postId')
+  @UseGuards(AuthGuard())
+  async delete_post(@Param('postId') postId: string) {
+    return this.postService.deletePost(postId);
   }
 
   @Get('/user-posts')
