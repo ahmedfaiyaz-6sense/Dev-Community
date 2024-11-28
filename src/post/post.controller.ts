@@ -4,7 +4,7 @@ import {
   Get,
   Post,
   Query,
-  Req,
+  // Req,
   UseGuards,
 } from '@nestjs/common';
 import { CreatePostDTO } from './dto/post.create_post.dto';
@@ -15,12 +15,14 @@ import { IUserPost } from './interfaces/post.interface';
 import { GetPostFilterDto } from './dto/post.filter_post.dto';
 import { IUser } from 'src/user/interfaces/user.interface';
 import { GetUser } from 'src/user/decorators/user.decorator';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('post')
+@ApiBearerAuth()
 export class PostController {
   constructor(private postService: PostService) {}
 
-  @Post('/create_post')
+  @Post('/create-post')
   @UseGuards(AuthGuard())
   async create_post(
     @Body() createPost: CreatePostDTO,

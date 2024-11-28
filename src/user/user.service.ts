@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   Injectable,
   InternalServerErrorException,
@@ -13,6 +14,7 @@ import { LoginUserDTO } from './dto/user.loginuser.dto';
 import { JWTPayload } from './user.jwt.payload.interface';
 import { JwtService } from '@nestjs/jwt';
 import { User } from './user.schema';
+import { UpdateSkillsAndExperienceDTO } from './dto/update_skills_and_experience.dto';
 @Injectable()
 export class UserService {
   constructor(
@@ -60,5 +62,25 @@ export class UserService {
       const access_token = await this.jwtService.sign(payload);
       return { access_token };
     }
+  }
+  public async updateSkillsAndExp(
+    updateSkillsAndExpDTO: UpdateSkillsAndExperienceDTO,
+    user: IUser,
+  ) {
+    const { skills, experience } = updateSkillsAndExpDTO;
+    const to_be_updated = [];
+    if (skills) {
+      to_be_updated.push(skills);
+    }
+    if (experience) {
+      to_be_updated.push(experience);
+    }
+    if (to_be_updated.length == 0) {
+      throw new BadRequestException('Please enter either skills or experience');
+    }
+    const updatedProfile = await this.userModel
+      .findOneAndUpdate({ _id: user._id }, { ...to_be_updated })
+      .select('-password');
+    return updatedProfile;
   }
 }
