@@ -1,4 +1,11 @@
-import { Body, Controller, Param, Post, Put, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Param,
+  Patch,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
 import { CommentService } from './comment.service';
 import { AuthGuard } from '@nestjs/passport';
 import { CreateCommentDTO } from './dto/create_comment.dto';
@@ -26,7 +33,7 @@ export class CommentController {
     return this.commentService.createComment(createCommentDTO, postId, user);
   }
 
-  @Put(':commentId')
+  @Patch(':commentId')
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
   async update_post(

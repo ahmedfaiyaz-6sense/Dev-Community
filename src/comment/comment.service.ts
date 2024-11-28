@@ -29,7 +29,7 @@ export class CommentService {
       const craftComment = {
         content: createCommentDTO.content,
         author: user._id,
-        from_post: postId,
+        from_post: isPost._id,
       };
       const createdComment = await this.commentModel.create(craftComment);
       return createdComment;
@@ -46,7 +46,7 @@ export class CommentService {
     const isComment = await this.commentModel.findOne({ _id: commentId });
     if (isComment) {
       const new_comment = await this.commentModel.findOneAndUpdate(
-        { _id: commentId },
+        { _id: isComment._id },
         { content: content },
         { new: true },
       );

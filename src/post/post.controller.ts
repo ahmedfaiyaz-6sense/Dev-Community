@@ -3,7 +3,7 @@ import {
   Controller,
   Get,
   Post,
-  Query,
+  // Query,
   // Req,
   UseGuards,
 } from '@nestjs/common';
@@ -12,7 +12,7 @@ import { CreatePostDTO } from './dto/post.create_post.dto';
 import { PostService } from './post.service';
 import { AuthGuard } from '@nestjs/passport';
 import { IUserPost } from './interfaces/post.interface';
-import { GetPostFilterDto } from './dto/post.filter_post.dto';
+//import { GetPostFilterDto } from './dto/post.filter_post.dto';
 import { IUser } from 'src/user/interfaces/user.interface';
 import { GetUser } from 'src/user/decorators/user.decorator';
 import { ApiBearerAuth } from '@nestjs/swagger';
@@ -32,17 +32,22 @@ export class PostController {
     return this.postService.createPost(createPost, user);
   }
 
-  @Get('/user_posts')
+  @Get('/user-posts')
   @UseGuards(AuthGuard())
   async get_user_posts(@GetUser() user): Promise<IUserPost[]> {
     return this.postService.getUserPosts(user);
   }
 
-  @Get('/filtered')
+  /*@Get('/filtered')
   async get_filtered_posts(
     @Query() postFilterDTO: GetPostFilterDto,
   ): Promise<IUserPost[]> {
     //to be implemented
     return this.postService.getFilteredPosts(postFilterDTO);
+  }*/
+
+  @Get('/all')
+  async get_all_post() {
+    return this.postService.getAllPosts();
   }
 }
