@@ -22,7 +22,7 @@ async function bootstrap() {
     })
     .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
-  writeFile('public/swagger.json', JSON.stringify(config));
+ // writeFile('public/swagger.json', JSON.stringify(config));
   SwaggerModule.setup('api', app, documentFactory);
   await app.listen(process.env.PORT ?? 3000);
 }
