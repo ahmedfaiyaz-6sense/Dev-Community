@@ -1,6 +1,6 @@
 import { Body, Controller, Post } from '@nestjs/common';
 import { CreateUserDTO } from './dto/user.createuser.dto';
-import { IUser } from './user.interface';
+import { IUser } from './interfaces/user.interface';
 import { UserService } from './user.service';
 import { LoginUserDTO } from './dto/user.loginuser.dto';
 //import { AuthGuard } from '@nestjs/passport';

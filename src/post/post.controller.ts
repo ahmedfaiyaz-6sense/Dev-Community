@@ -11,10 +11,10 @@ import { CreatePostDTO } from './dto/post.create_post.dto';
 //import { UserPost } from './post.schema';
 import { PostService } from './post.service';
 import { AuthGuard } from '@nestjs/passport';
-import { IUserPost } from './post.interface';
+import { IUserPost } from './interfaces/post.interface';
 import { GetPostFilterDto } from './dto/post.filter_post.dto';
-import { IUser } from 'src/user/user.interface';
-import { GetUser } from 'src/user/user.decorator';
+import { IUser } from 'src/user/interfaces/user.interface';
+import { GetUser } from 'src/user/decorators/user.decorator';
 
 @Controller('post')
 export class PostController {
@@ -32,8 +32,7 @@ export class PostController {
 
   @Get('/user_posts')
   @UseGuards(AuthGuard())
-  async get_user_posts(@Req() req): Promise<IUserPost[]> {
-    const user = req.user;
+  async get_user_posts(@GetUser() user): Promise<IUserPost[]> {
     return this.postService.getUserPosts(user);
   }
 

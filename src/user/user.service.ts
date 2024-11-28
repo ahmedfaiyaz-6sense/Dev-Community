@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { CreateUserDTO } from './dto/user.createuser.dto';
 import { Model } from 'mongoose';
-import { IUser } from './user.interface';
+import { IUser } from './interfaces/user.interface';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { LoginUserDTO } from './dto/user.loginuser.dto';
@@ -26,7 +26,13 @@ export class UserService {
     user.password = hashed_password;
     try {
       const createdUser = await this.userModel.create(user);
-      return createdUser;
+      const santizedUser = await this.userModel
+        .findOne({
+          _id: createdUser._id,
+        })
+        .select('-password');
+      ///console.log(santizedUser);
+      return santizedUser;
     } catch (error) {
       if (error.code === 11000) {
         throw new ConflictException('Username already exists.');
