@@ -1,4 +1,4 @@
-import { Body, Controller, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
 import { CreateUserDTO } from './dto/user.createuser.dto';
 import { IUser } from './interfaces/user.interface';
 import { UserService } from './user.service';
@@ -19,6 +19,10 @@ export class UserController {
   @Post('/login')
   loginUser(@Body() user: LoginUserDTO): Promise<{ access_token: string }> {
     return this.userService.loginUser(user);
+  }
+  @Get('/all-posts')
+  getAllPosts() {
+    return this.userService.getAllPostsofAllUser();
   }
 
   @Patch('/update')
