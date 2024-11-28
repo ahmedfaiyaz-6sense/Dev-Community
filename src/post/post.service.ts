@@ -44,4 +44,19 @@ export class PostService {
 
     return await this.postModel.findOne({ content });
   }
+
+  public async getAllPosts(): Promise<IUserPost[]> {
+    const pipeline = [
+      {
+        $lookup: {
+          from: 'comments',
+          localField: '_id',
+          foreignField: 'from_post',
+          as: 'comments',
+        },
+      },
+    ];
+    const aggregated = await this.postModel.aggregate(pipeline);
+    return aggregated;
+  }
 }

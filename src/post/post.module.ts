@@ -15,6 +15,5 @@ import { PassportModule } from '@nestjs/passport';
 
   providers: [PostService],
   controllers: [PostController],
-  
 })
 export class PostModule {}
