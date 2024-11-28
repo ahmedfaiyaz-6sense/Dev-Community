@@ -8,6 +8,7 @@ import { Comment } from './comment.schema';
 import { UserPost } from 'src/post/post.schema';
 import { IUserPost } from 'src/post/interfaces/post.interface';
 import { UpdateCommentDTO } from './dto/update_comment.dto';
+import { Types } from 'mongoose';
 //import { UpdateCommentDTO } from './dto/update_comment.dto';
 //import { NotFoundError } from 'rxjs';
 @Injectable()
@@ -42,6 +43,9 @@ export class CommentService {
     updateCommentDTO: UpdateCommentDTO,
     commentId: string,
   ) {
+    if (!Types.ObjectId.isValid(commentId)) {
+      throw new NotFoundException('Comment not found');
+    }
     const { content } = updateCommentDTO;
     const isComment = await this.commentModel.findOne({ _id: commentId });
     if (isComment) {
@@ -51,6 +55,19 @@ export class CommentService {
         { new: true },
       );
       return new_comment;
+    } else {
+      throw new NotFoundException('Comment not found');
+    }
+  }
+  public async deleteComment(commentId: string) {
+    if (!Types.ObjectId.isValid(commentId)) {
+      throw new NotFoundException('Comment not found');
+    }
+    const deletedpost = await this.commentModel.findOneAndDelete({
+      _id: commentId,
+    });
+    if (deletedpost) {
+      return deletedpost;
     } else {
       throw new NotFoundException('Comment not found');
     }

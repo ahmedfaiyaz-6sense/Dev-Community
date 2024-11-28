@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Param,
   Patch,
   Post,
@@ -41,5 +42,12 @@ export class CommentController {
     @Param('commentId') commentId: string,
   ) {
     return this.commentService.updateComment(updateCommentDTO, commentId);
+  }
+
+  @Delete(':commentId')
+  @UseGuards(AuthGuard())
+  @ApiBearerAuth()
+  async delete_comment(@Param('commentId') commentId: string) {
+    return this.commentService.deleteComment(commentId);
   }
 }
