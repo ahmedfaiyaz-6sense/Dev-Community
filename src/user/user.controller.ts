@@ -1,4 +1,4 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Patch, Post, UseGuards } from '@nestjs/common';
 import { CreateUserDTO } from './dto/user.createuser.dto';
 import { IUser } from './interfaces/user.interface';
 import { UserService } from './user.service';
@@ -21,7 +21,7 @@ export class UserController {
     return this.userService.loginUser(user);
   }
 
-  @Post('/update')
+  @Patch('/update')
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
   updateSkillsAndXp(

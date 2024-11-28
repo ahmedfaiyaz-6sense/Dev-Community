@@ -68,18 +68,27 @@ export class UserService {
     user: IUser,
   ) {
     const { skills, experience } = updateSkillsAndExpDTO;
-    const to_be_updated = [];
+    const to_be_updated = {};
     if (skills) {
-      to_be_updated.push(skills);
+      to_be_updated['skills'] = skills;
     }
     if (experience) {
-      to_be_updated.push(experience);
+      to_be_updated['experience'] = experience;
     }
-    if (to_be_updated.length == 0) {
+    //console.log(to_be_updated);
+    if (!to_be_updated) {
       throw new BadRequestException('Please enter either skills or experience');
     }
+
     const updatedProfile = await this.userModel
-      .findOneAndUpdate({ _id: user._id }, { ...to_be_updated })
+      .findOneAndUpdate(
+        { _id: user._id },
+        {
+          skills: to_be_updated['skills'],
+          experience: to_be_updated['experience'],
+        },
+        { new: true },
+      )
       .select('-password');
     return updatedProfile;
   }
