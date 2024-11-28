@@ -1,8 +1,12 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { CreateUserDTO } from './dto/user.createuser.dto';
 import { IUser } from './interfaces/user.interface';
 import { UserService } from './user.service';
 import { LoginUserDTO } from './dto/user.loginuser.dto';
+import { UpdateSkillsAndExperienceDTO } from './dto/update_skills_and_experience.dto';
+import { GetUser } from './decorators/user.decorator';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth } from '@nestjs/swagger';
 //import { AuthGuard } from '@nestjs/passport';
 @Controller('user')
 export class UserController {
@@ -15,6 +19,16 @@ export class UserController {
   @Post('/login')
   loginUser(@Body() user: LoginUserDTO): Promise<{ access_token: string }> {
     return this.userService.loginUser(user);
+  }
+
+  @Post('/update')
+  @UseGuards(AuthGuard())
+  @ApiBearerAuth()
+  updateSkillsAndXp(
+    @Body() updateSkillsAndXp: UpdateSkillsAndExperienceDTO,
+    @GetUser() user: IUser,
+  ) {
+    return this.userService.updateSkillsAndExp(updateSkillsAndXp, user);
   }
 
   ///test guard
