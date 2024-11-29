@@ -4,8 +4,9 @@ import { UserPost } from 'src/post/post.schema';
 import { Like } from './like.schema';
 import { ILike } from './interfaces/like.interface';
 import { IUserPost } from 'src/post/interfaces/post.interface';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { IUser } from 'src/user/interfaces/user.interface';
+import { LikeDTO } from './dto/like.dto';
 
 @Injectable()
 export class LikeService {
@@ -45,5 +46,36 @@ export class LikeService {
     } else {
       throw new NotFoundException('Post not found');
     }
+  }
+  public async getLikes(likeDTO: LikeDTO) {
+    const { postId } = likeDTO;
+
+    const likeCountOfPostPipeline = [
+      {
+        $match: {
+          _id: { $eq: new Types.ObjectId(postId) },
+        },
+      },
+      {
+        $lookup: {
+          from: 'likes',
+          localField: '_id',
+          foreignField: 'from_post',
+          as: 'result',
+        },
+      },
+      {
+        $project: {
+          likesCount: { $size: '$result' },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+        },
+      },
+    ];
+    const getLikes = await this.userPost.aggregate(likeCountOfPostPipeline);
+    return getLikes[0];
   }
 }
