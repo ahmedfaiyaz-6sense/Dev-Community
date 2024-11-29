@@ -27,7 +27,7 @@ import { UserPost } from './post.schema';
 @ApiBearerAuth()
 export class PostController {
   constructor(private postService: PostService) {}
-
+  
   @Post('/create-post')
   @UseGuards(AuthGuard())
   @ApiCreatedResponse({
@@ -74,5 +74,9 @@ export class PostController {
   @Get('/all')
   async get_all_post() {
     return this.postService.getAllPosts();
+  }
+  @Get('/:postId')
+  async getPost(@Param('postId') postId: string) {
+    return this.postService.getPost(postId);
   }
 }
