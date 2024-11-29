@@ -117,6 +117,14 @@ export class PostService {
           as: 'comments',
         },
       },
+      {
+        $lookup: {
+          from: 'likes',
+          localField: '_id',
+          foreignField: 'from_post',
+          as: 'likes',
+        },
+      },
     ];
     const aggregated = await this.postModel.aggregate(pipeline);
     return aggregated;

@@ -66,7 +66,7 @@ export class LikeService {
       },
       {
         $project: {
-          likesCount: { $size: '$result' },
+          likesCount: { $sum: '$result.counter' },
         },
       },
       {
