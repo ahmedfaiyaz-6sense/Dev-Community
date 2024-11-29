@@ -1,4 +1,4 @@
-import { Controller, Param, Post, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Put, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { GetUser } from 'src/user/decorators/user.decorator';
@@ -14,11 +14,16 @@ export class LikeController {
   async like_post(@Param('postId') postId: string,@Body() ) {}*/
   constructor(private likeService: LikeService) {}
 
-  @Post(':postId')
+  @Put(':postId')
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
   async likePost(@Param() likeDTO: LikeDTO, @GetUser() user: IUser) {
     const { postId } = likeDTO;
     return this.likeService.likePost(postId, user);
+  }
+
+  @Get('count/:postId')
+  async getLikes(@Param() likeDTO: LikeDTO) {
+    return this.likeService.getLikes(likeDTO);
   }
 }
