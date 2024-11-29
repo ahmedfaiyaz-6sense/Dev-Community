@@ -37,7 +37,7 @@ export class CommentController {
   @Patch(':commentId')
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
-  async update_post(
+  async updateComment(
     @Body() updateCommentDTO: UpdateCommentDTO,
     @Param('commentId') commentId: string,
   ) {
