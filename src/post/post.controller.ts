@@ -19,16 +19,21 @@ import { IUserPost } from './interfaces/post.interface';
 //import { GetPostFilterDto } from './dto/post.filter_post.dto';
 import { IUser } from 'src/user/interfaces/user.interface';
 import { GetUser } from 'src/user/decorators/user.decorator';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiCreatedResponse } from '@nestjs/swagger';
 import { UpdatePostDTO } from './dto/post.update_post.dto';
+import { UserPost } from './post.schema';
 
 @Controller('post')
 @ApiBearerAuth()
 export class PostController {
   constructor(private postService: PostService) {}
-
+  
   @Post('/create-post')
   @UseGuards(AuthGuard())
+  @ApiCreatedResponse({
+    description: 'Post successfully created.',
+    type: UserPost,
+  })
   async create_post(
     @Body() createPost: CreatePostDTO,
     /// @Req() req,
@@ -69,5 +74,9 @@ export class PostController {
   @Get('/all')
   async get_all_post() {
     return this.postService.getAllPosts();
+  }
+  @Get('/:postId')
+  async getPost(@Param('postId') postId: string) {
+    return this.postService.getPost(postId);
   }
 }
