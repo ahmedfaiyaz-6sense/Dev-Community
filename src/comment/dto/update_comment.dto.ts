@@ -6,6 +6,9 @@ import { IsNotEmpty } from 'class-validator';
 
 export class UpdateCommentDTO {
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({
+    description: 'Comment content',
+    example: 'A quick brown fox jumps over the lazy dog',
+  })
   content: string;
 }

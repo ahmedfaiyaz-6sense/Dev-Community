@@ -92,6 +92,21 @@ export class PostService {
           as: 'comments',
         },
       },
+      {
+        $lookup: {
+          from: 'likes',
+          localField: '_id',
+          foreignField: 'from_post',
+          as: 'likes',
+        },
+      },
+      {
+        $addFields: {
+          likescount: {
+            $sum: '$likes.counter',
+          },
+        },
+      },
     ];
     const aggregated = await this.postModel.aggregate(pipelines);
     return aggregated;
@@ -115,6 +130,56 @@ export class PostService {
           localField: '_id',
           foreignField: 'from_post',
           as: 'comments',
+        },
+      },
+      {
+        $lookup: {
+          from: 'likes',
+          localField: '_id',
+          foreignField: 'from_post',
+          as: 'likes',
+        },
+      },
+      {
+        $addFields: {
+          likescount: {
+            $sum: '$likes.counter',
+          },
+        },
+      },
+    ];
+    const aggregated = await this.postModel.aggregate(pipeline);
+    return aggregated;
+  }
+
+  public async getPost(postId: string) {
+    const pipeline = [
+      {
+        $match: {
+          _id: { $eq: new Types.ObjectId(postId) },
+        },
+      },
+      {
+        $lookup: {
+          from: 'comments',
+          localField: '_id',
+          foreignField: 'from_post',
+          as: 'comments',
+        },
+      },
+      {
+        $lookup: {
+          from: 'likes',
+          localField: '_id',
+          foreignField: 'from_post',
+          as: 'likes',
+        },
+      },
+      {
+        $addFields: {
+          likescount: {
+            $sum: '$likes.counter',
+          },
         },
       },
     ];
