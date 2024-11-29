@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { UserPost } from 'src/post/post.schema';
 import { Like } from './like.schema';
@@ -13,25 +13,37 @@ export class LikeService {
     @InjectModel(Like.name) private likeModel: Model<ILike>,
     @InjectModel(UserPost.name) private userPost: Model<IUserPost>,
   ) {}
-  public async likePost(postId: string, user: IUser) {
-    const findPost = await this.userPost.find({ _id: postId });
+  public async likePost(
+    postId: string,
+    user: IUser,
+  ): Promise<ILike | { message: string }> {
+    const findPost = await this.userPost.findOne({ _id: postId });
     if (findPost) {
       const findLike = await this.likeModel.findOne({
-        from_post: postId,
+        from_post: findPost._id,
         liked_by: user._id,
       });
+      const likeObject = {
+        counter: 1,
+        from_post: findPost._id,
+        liked_by: user._id,
+      };
       if (findLike) {
-        return {
-          message: 'User already liked the post',
-        };
+        if (findLike.counter == 0) {
+          likeObject.counter = 1;
+        } else if (findLike.counter == 1) {
+          likeObject.counter = 0;
+        }
+        return await this.likeModel.findByIdAndUpdate(
+          findLike._id,
+          likeObject,
+          { new: true },
+        );
       } else {
-        const likeObject = {
-          counter: 1,
-          from_post: postId,
-          liked_by: user._id,
-        };
         return await this.likeModel.create(likeObject);
       }
+    } else {
+      throw new NotFoundException('Post not found');
     }
   }
 }
