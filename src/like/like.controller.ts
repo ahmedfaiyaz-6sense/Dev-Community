@@ -4,6 +4,7 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 import { GetUser } from 'src/user/decorators/user.decorator';
 import { IUser } from 'src/user/interfaces/user.interface';
 import { LikeService } from './like.service';
+import { LikeDTO } from './dto/like.dto';
 
 @Controller('like')
 export class LikeController {
@@ -16,7 +17,8 @@ export class LikeController {
   @Post(':postId')
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
-  async likePost(@Param('postId') postId: string, @GetUser() user: IUser) {
+  async likePost(@Param() likeDTO: LikeDTO, @GetUser() user: IUser) {
+    const { postId } = likeDTO;
     return this.likeService.likePost(postId, user);
   }
 }
