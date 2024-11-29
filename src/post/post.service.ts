@@ -125,6 +125,13 @@ export class PostService {
           as: 'likes',
         },
       },
+      {
+        $addFields: {
+          likescount: {
+            $sum: '$likes.counter',
+          },
+        },
+      },
     ];
     const aggregated = await this.postModel.aggregate(pipeline);
     return aggregated;
