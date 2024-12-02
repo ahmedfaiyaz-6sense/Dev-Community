@@ -26,11 +26,24 @@ const mockCreateUser = () => {
   };
   return create_user;
 };
+const mockUpdateUser = () => {
+  const update_user = {
+    _id: '674d7ad5fd6df0f1c9020fax',
+    username: 'User-1',
+    skills: ['C'],
+    experience: 10,
+    _v0: 0,
+  };
+  return update_user;
+};
 const userModelMock = {
   //_id: jest.fn(),
   create: jest.fn(),
   findOne: jest.fn().mockReturnValue({
     select: jest.fn().mockResolvedValue(mockCreateUser()),
+  }),
+  findOneAndUpdate: jest.fn().mockReturnValue({
+    select: jest.fn().mockResolvedValue(mockUpdateUser()),
   }),
   find: jest.fn(() => TestCases.listUser),
 };
@@ -78,6 +91,14 @@ describe('UserService', () => {
       const result = await service.loginUser(TestCases.loginUser);
       expect(result).toEqual(TestVerifier.loggedInUser);
       // console.log(result);
+    });
+  });
+
+  describe('user-update', () => {
+    it('Should update user skills and experience', async () => {
+      const { updateSkillAndExp, user } = TestCases.updateUser;
+      const result = await service.updateSkillsAndExp(updateSkillAndExp, user);
+      expect(result).toEqual(TestVerifier.updatedUser);
     });
   });
 });
