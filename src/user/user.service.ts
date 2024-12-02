@@ -53,7 +53,7 @@ export class UserService {
     if (!found_user.length) {
       throw new NotFoundException('Username or password is wrong');
     }
-    const verify = bcrypt.compare(found_user[0].password, user.password);
+    const verify = await bcrypt.compare(found_user[0].password, user.password);
     if (!verify) {
       throw new NotFoundException('Username or password is wrong');
     } else {

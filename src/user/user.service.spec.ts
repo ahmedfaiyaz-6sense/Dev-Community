@@ -7,7 +7,8 @@ import { CreateUserDTO } from './dto/user.createuser.dto';
 import { Model } from 'mongoose';
 import { TestCases } from './test-cases/user.tests';
 import { TestVerifier } from './test-cases/user.verifier';
-//import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt';
+import { LoginUserDTO } from './dto/user.loginuser.dto';
 
 const mocked_user: CreateUserDTO = {
   username: 'User',
@@ -88,8 +89,15 @@ describe('UserService', () => {
 
   describe('login', () => {
     it('Should return a access token for a user', async () => {
+      const salt = await bcrypt.genSalt();
+      const hashed_password = await bcrypt.hash(
+        TestCases.loginUser.password,
+        salt,
+      );
+      TestCases.loginUser.password = hashed_password;
       const result = await service.loginUser(TestCases.loginUser);
       expect(result).toEqual(TestVerifier.loggedInUser);
+      //expect(service.loginUser).toHaveBeenCalledWith(LoginUserDTO);
       // console.log(result);
     });
   });
