@@ -5,7 +5,7 @@ import { UpdateSkillsAndExperienceDTO } from '../dto/update_skills_and_experienc
 export class TestCases {
   static createUser: CreateUserDTO = {
     username: 'User',
-    password: 'password',
+    password: 'Password',
     experience: 1,
     skills: ['A'],
   };
@@ -25,7 +25,7 @@ export class TestCases {
     {
       _id: '674705cc543615a9a296ff69',
       username: 'abfcde',
-      password: 'password',
+      password: 'Password',
       skills: ['a', 'b'],
       experience: 10,
       __v: 0,
