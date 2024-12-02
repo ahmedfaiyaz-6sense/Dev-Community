@@ -19,7 +19,7 @@ const mocked_user: CreateUserDTO = {
 const mockCreateUser = () => {
   const create_user = {
     _id: '674d7ad5fd6df0f1c9020fab',
-    name: mocked_user['username'],
+    username: mocked_user['username'],
     skills: mocked_user['skills'],
     experience: mocked_user['experience'],
     _v0: 0,
@@ -32,6 +32,7 @@ const userModelMock = {
   findOne: jest.fn().mockReturnValue({
     select: jest.fn().mockResolvedValue(mockCreateUser()),
   }),
+  find: jest.fn(() => TestCases.listUser),
 };
 describe('UserService', () => {
   let service: UserService;
@@ -46,7 +47,10 @@ describe('UserService', () => {
         },
         JwtService,
       ],
-    }).compile();
+    })
+      .overrideProvider(JwtService)
+      .useValue({ sign: jest.fn().mockResolvedValue('mocked_token') })
+      .compile();
 
     service = module.get<UserService>(UserService);
     model = module.get(getModelToken(User.name));
@@ -66,6 +70,14 @@ describe('UserService', () => {
       //console.log(result);
       expect(result).toEqual(TestVerifier.createdUser);
       expect(model.create).toHaveBeenCalledWith(TestCases.createUser);
+    });
+  });
+
+  describe('login', () => {
+    it('Should return a access token for a user', async () => {
+      const result = await service.loginUser(TestCases.loginUser);
+      expect(result).toEqual(TestVerifier.loggedInUser);
+      // console.log(result);
     });
   });
 });

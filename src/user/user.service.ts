@@ -49,6 +49,7 @@ export class UserService {
     user: LoginUserDTO,
   ): Promise<{ access_token: string }> {
     const found_user = await this.userModel.find({ username: user.username });
+    // console.log(found_user);
     if (!found_user.length) {
       throw new NotFoundException('Username or password is wrong');
     }
@@ -57,7 +58,7 @@ export class UserService {
       throw new NotFoundException('Username or password is wrong');
     } else {
       const username = found_user[0].username;
-      //console.log(username);
+      // console.log(username);
       const payload: JWTPayload = {
         username,
       };
