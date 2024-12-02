@@ -5,22 +5,16 @@ import { getModelToken } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDTO } from './dto/user.createuser.dto';
 import { Model } from 'mongoose';
+import { TestCases } from './test-cases/user.tests';
 //import * as bcrypt from 'bcrypt';
+
 const mocked_user: CreateUserDTO = {
   username: 'User',
   password: 'password',
   experience: 1,
   skills: ['A'],
 };
-const test_cases = {
-  create_user: {
-    _id: '674d7ad5fd6df0f1c9020fab',
-    name: 'User',
-    skills: ['A'],
-    experience: 1,
-    _v0: 0,
-  },
-};
+
 const mockCreateUser = () => {
   const create_user = {
     _id: '674d7ad5fd6df0f1c9020fab',
@@ -74,7 +68,7 @@ describe('UserService', () => {
       };
       const result = await service.createUser(test_user);
       //console.log(result);
-      expect(result).toEqual(test_cases.create_user);
+      expect(result).toEqual(TestCases.createUserTestCase);
       expect(model.create).toHaveBeenCalledWith(test_user);
     });
   });
