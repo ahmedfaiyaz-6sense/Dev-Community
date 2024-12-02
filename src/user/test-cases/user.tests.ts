@@ -1,5 +1,6 @@
 import { CreateUserDTO } from '../dto/user.createuser.dto';
 import { LoginUserDTO } from '../dto/user.loginuser.dto';
+import { UpdateSkillsAndExperienceDTO } from '../dto/update_skills_and_experience.dto';
 // TestCases.ts
 export class TestCases {
   static createUser: CreateUserDTO = {
@@ -30,4 +31,17 @@ export class TestCases {
       __v: 0,
     },
   ];
+
+  static updateUser = {
+    updateSkillAndExp: {
+      skills: ['C'],
+      experience: 10,
+    } as UpdateSkillsAndExperienceDTO,
+    user: {
+      _id: '674d7ad5fd6df0f1c9020fax',
+      username: 'User-1',
+      skills: ['A'],
+      experience: 10,
+    } as any,
+  };
 }
