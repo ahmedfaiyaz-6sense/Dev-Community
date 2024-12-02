@@ -1,10 +1,11 @@
+import { CreateUserDTO } from '../dto/user.createuser.dto';
+
 // TestCases.ts
 export class TestCases {
-  static createUserTestCase = {
-    _id: '674d7ad5fd6df0f1c9020fab',
-    name: 'User',
-    skills: ['A'],
+  static createUser: CreateUserDTO = {
+    username: 'User',
+    password: 'password',
     experience: 1,
-    _v0: 0,
+    skills: ['A'],
   };
 }

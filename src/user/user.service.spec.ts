@@ -6,6 +6,7 @@ import { JwtService } from '@nestjs/jwt';
 import { CreateUserDTO } from './dto/user.createuser.dto';
 import { Model } from 'mongoose';
 import { TestCases } from './test-cases/user.tests';
+import { TestVerifier } from './test-cases/user.verifier';
 //import * as bcrypt from 'bcrypt';
 
 const mocked_user: CreateUserDTO = {
@@ -60,16 +61,11 @@ describe('UserService', () => {
   describe('usercreation', () => {
     it('Should successfully create a user', async () => {
       model.create.mockResolvedValueOnce(mocked_user as any);
-      const test_user: CreateUserDTO = {
-        username: 'User',
-        password: 'password',
-        experience: 1,
-        skills: ['A'],
-      };
-      const result = await service.createUser(test_user);
+
+      const result = await service.createUser(TestCases.createUser);
       //console.log(result);
-      expect(result).toEqual(TestCases.createUserTestCase);
-      expect(model.create).toHaveBeenCalledWith(test_user);
+      expect(result).toEqual(TestVerifier.createdUser);
+      expect(model.create).toHaveBeenCalledWith(TestCases.createUser);
     });
   });
 });
