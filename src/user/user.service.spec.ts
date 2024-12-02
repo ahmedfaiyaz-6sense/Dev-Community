@@ -8,7 +8,7 @@ import { Model } from 'mongoose';
 import { TestCases } from './test-cases/user.tests';
 import { TestVerifier } from './test-cases/user.verifier';
 import * as bcrypt from 'bcrypt';
-import { LoginUserDTO } from './dto/user.loginuser.dto';
+//import { LoginUserDTO } from './dto/user.loginuser.dto';
 
 const mocked_user: CreateUserDTO = {
   username: 'User',

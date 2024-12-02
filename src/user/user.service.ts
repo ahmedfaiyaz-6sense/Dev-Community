@@ -48,9 +48,11 @@ export class UserService {
   public async loginUser(
     user: LoginUserDTO,
   ): Promise<{ access_token: string }> {
-    const found_user = await this.userModel.find({ username: user.username });
+    const found_user = await this.userModel.findOne({
+      username: user.username,
+    });
     // console.log(found_user);
-    if (!found_user.length) {
+    if (!found_user) {
       throw new NotFoundException('Username or password is wrong');
     }
     const verify = await bcrypt.compare(found_user[0].password, user.password);
