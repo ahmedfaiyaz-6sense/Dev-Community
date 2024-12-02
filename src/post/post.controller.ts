@@ -27,7 +27,6 @@ import { UserPost } from './post.schema';
 @ApiBearerAuth()
 export class PostController {
   constructor(private postService: PostService) {}
-  
   @Post('/create-post')
   @UseGuards(AuthGuard())
   @ApiCreatedResponse({

@@ -28,17 +28,19 @@ export class UserService {
     user.password = hashed_password;
     try {
       const createdUser = await this.userModel.create(user);
+      //console.log(createdUser);
       const santizedUser = await this.userModel
         .findOne({
           _id: createdUser._id,
         })
         .select('-password');
-      ///console.log(santizedUser);
+      //console.log(santizedUser);
       return santizedUser;
     } catch (error) {
       if (error.code === 11000) {
         throw new ConflictException('Username already exists.');
       } else {
+        console.log(error);
         throw new InternalServerErrorException('Unknown error function');
       }
     }
