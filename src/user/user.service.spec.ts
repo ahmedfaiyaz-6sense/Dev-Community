@@ -95,8 +95,13 @@ describe('UserService', () => {
         salt,
       );
       TestCases.loginUser.password = hashed_password;
-      const result = await service.loginUser(TestCases.loginUser);
-      expect(result).toEqual(TestVerifier.loggedInUser);
+      const correct_login = await service.loginUser(TestCases.loginUser);
+      expect(correct_login).toEqual(TestVerifier.loggedInUser);
+
+      //const incorrect_login = await service.loginUser(
+      //  TestCases.loginUserWrongPassword,
+      // );
+      //  expect(incorrect_login).toEqual()
       //expect(service.loginUser).toHaveBeenCalledWith(LoginUserDTO);
       // console.log(result);
     });

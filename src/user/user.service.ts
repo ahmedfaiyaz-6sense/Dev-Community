@@ -51,15 +51,17 @@ export class UserService {
     const found_user = await this.userModel.findOne({
       username: user.username,
     });
-    // console.log(found_user);
+
     if (!found_user) {
       throw new NotFoundException('Username or password is wrong');
     }
-    const verify = await bcrypt.compare(found_user[0].password, user.password);
+    //console.log(found_user.password, user.password);
+    const verify = await bcrypt.compare(user.password, found_user.password);
+
     if (!verify) {
       throw new NotFoundException('Username or password is wrong');
     } else {
-      const username = found_user[0].username;
+      const username = found_user.username;
       // console.log(username);
       const payload: JWTPayload = {
         username,

@@ -13,6 +13,10 @@ export class TestCases {
     username: 'User',
     password: 'Password',
   };
+  static loginUserWrongPassword: LoginUserDTO = {
+    username: 'User',
+    password: 'Passwrd',
+  };
   static listUser = [
     {
       _id: '674d7ad5fd6df0f1c9020fab',
