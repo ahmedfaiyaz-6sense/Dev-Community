@@ -146,5 +146,12 @@ describe('UserService', () => {
       const result = await service.updateSkillsAndExp(updateSkillAndExp, user);
       expect(result).toEqual(TestVerifier.updatedUser);
     });
+    it('Shoudld throw a bad request exception for empty skills and xp', async () => {
+      const { updateSkillAndExp, user } = TestCases.updateUserFalse;
+      //console.log(updateSkillAndExp);
+      await expect(
+        service.updateSkillsAndExp(updateSkillAndExp, user),
+      ).rejects.toThrow(BadRequestException);
+    });
   });
 });

@@ -40,7 +40,7 @@ export class UserService {
       if (error.code === 11000) {
         throw new ConflictException('Username already exists.');
       } else {
-        console.log(error);
+        //console.log(error);
         throw new InternalServerErrorException('Unknown error function');
       }
     }
@@ -74,6 +74,7 @@ export class UserService {
     updateSkillsAndExpDTO: UpdateSkillsAndExperienceDTO,
     user: IUser,
   ) {
+    //console.log(updateSkillsAndExpDTO);
     const { skills, experience } = updateSkillsAndExpDTO;
     const to_be_updated = {};
     if (skills) {
@@ -82,8 +83,11 @@ export class UserService {
     if (experience) {
       to_be_updated['experience'] = experience;
     }
-    //console.log(to_be_updated);
-    if (!to_be_updated) {
+    //  console.log(to_be_updated);
+    if (
+      Object.keys(to_be_updated).length === 0 &&
+      to_be_updated.constructor === Object
+    ) {
       throw new BadRequestException('Please enter either skills or experience');
     }
 
@@ -99,6 +103,7 @@ export class UserService {
       .select('-password');
     return updatedProfile;
   }
+
   public async getAllPostsofAllUser() {
     const pipelines = [
       {

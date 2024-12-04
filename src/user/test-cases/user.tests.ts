@@ -52,4 +52,13 @@ export class TestCases {
       experience: 10,
     } as any,
   };
+  static updateUserFalse = {
+    updateSkillAndExp: {} as UpdateSkillsAndExperienceDTO,
+    user: {
+      _id: '674d7ad5fd6df0f1c9020fax',
+      username: 'User-1',
+      skills: ['A'],
+      experience: 10,
+    } as any,
+  };
 }
