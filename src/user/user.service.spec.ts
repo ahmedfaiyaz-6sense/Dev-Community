@@ -5,9 +5,16 @@ import { getModelToken } from '@nestjs/mongoose';
 import { JwtService } from '@nestjs/jwt';
 import { CreateUserDTO } from './dto/user.createuser.dto';
 import { Model } from 'mongoose';
+import { MockError } from './test-cases/customError';
 import { TestCases } from './test-cases/user.tests';
 import { TestVerifier } from './test-cases/user.verifier';
 import * as bcrypt from 'bcrypt';
+import {
+  BadRequestException,
+  ConflictException,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 //import { LoginUserDTO } from './dto/user.loginuser.dto';
 
 const mocked_user: CreateUserDTO = {
@@ -68,6 +75,10 @@ describe('UserService', () => {
 
     service = module.get<UserService>(UserService);
     model = module.get(getModelToken(User.name));
+    jest.spyOn(bcrypt, 'compare').mockResolvedValue(true);
+  });
+  afterEach(() => {
+    jest.restoreAllMocks();
   });
 
   describe('findAll', () => {
@@ -85,25 +96,47 @@ describe('UserService', () => {
       expect(result).toEqual(TestVerifier.createdUser);
       expect(model.create).toHaveBeenCalledWith(TestCases.createUser);
     });
+    it('Should return conflict message if username already exist', async () => {
+      jest.spyOn(bcrypt, 'genSalt').mockResolvedValue('anything');
+      jest.spyOn(bcrypt, 'hash').mockResolvedValue('anything');
+      jest.spyOn(service['userModel'], 'create').mockImplementation(() => {
+        if (TestCases.createUser.username == mocked_user.username) {
+          throw new MockError('Duplicate error', 11000);
+        } else {
+          throw new BadRequestException('New User created');
+        }
+      });
+      await expect(service.createUser(TestCases.createUser)).rejects.toThrow(
+        ConflictException,
+      );
+    });
+    it('Should return a server exception if anything bad occurs', async () => {
+      jest.spyOn(service['userModel'], 'create').mockImplementation(() => {
+        throw new MockError('Network connection unavailable', 19322);
+      });
+      await expect(service.createUser(TestCases.createUser)).rejects.toThrow(
+        InternalServerErrorException,
+      );
+    });
   });
 
   describe('login', () => {
-    it('Should return a access token for a user', async () => {
-      const salt = await bcrypt.genSalt();
-      const hashed_password = await bcrypt.hash(
-        TestCases.loginUser.password,
-        salt,
-      );
-      TestCases.loginUser.password = hashed_password;
+    it('Should return a access token for a user with valid creds', async () => {
       const correct_login = await service.loginUser(TestCases.loginUser);
       expect(correct_login).toEqual(TestVerifier.loggedInUser);
-
-      //const incorrect_login = await service.loginUser(
-      //  TestCases.loginUserWrongPassword,
-      // );
-      //  expect(incorrect_login).toEqual()
-      //expect(service.loginUser).toHaveBeenCalledWith(LoginUserDTO);
-      // console.log(result);
+    });
+    it('Should return a not found response for invalid password', async () => {
+      jest.spyOn(bcrypt, 'compare').mockResolvedValue(false);
+      await expect(
+        service.loginUser(TestCases.loginUserWrongPassword),
+      ).rejects.toThrow(NotFoundException);
+    });
+    it('Should return a not found response for username which does not exist', async () => {
+      jest.spyOn(service['userModel'], 'findOne').mockResolvedValue(false);
+      jest.spyOn(bcrypt, 'compare').mockResolvedValue(true);
+      await expect(
+        service.loginUser(TestCases.loginUsernameDoesNotExist),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 

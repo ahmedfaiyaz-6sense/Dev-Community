@@ -17,6 +17,10 @@ export class TestCases {
     username: 'User',
     password: 'Passwrd',
   };
+  static loginUsernameDoesNotExist: LoginUserDTO = {
+    username: 'User',
+    password: 'Password',
+  };
   static listUser = [
     {
       _id: '674d7ad5fd6df0f1c9020fab',
