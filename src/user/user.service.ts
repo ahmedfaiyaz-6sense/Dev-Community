@@ -107,6 +107,7 @@ export class UserService {
       const username = found_user[0].username;
       //console.log(username);
       const { accessToken, refreshToken } = await this.getTokens(username);
+      await this.updateRefreshToken(username, refreshToken);
       return {
         accessToken,
         refreshToken,
