@@ -8,13 +8,13 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CommentService } from './comment.service';
-import { AuthGuard } from '@nestjs/passport';
 import { CreateCommentDTO } from './dto/create_comment.dto';
 import { GetUser } from 'src/user/decorators/user.decorator';
 import { IComment } from './interfaces/comment.interface';
 import { IUser } from 'src/user/interfaces/user.interface';
 import { ApiBearerAuth } from '@nestjs/swagger';
 import { UpdateCommentDTO } from './dto/update_comment.dto';
+import { AccessTokenGuard } from 'src/user/accessToken.guard';
 //import { UpdateCommentDTO } from './dto/update_comment.dto';
 
 @Controller('comment')
@@ -22,7 +22,7 @@ export class CommentController {
   constructor(private commentService: CommentService) {}
 
   @Post(':postId')
-  @UseGuards(AuthGuard())
+  @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()
   async createComment(
     @Param('postId') postId: string,
@@ -35,7 +35,7 @@ export class CommentController {
   }
 
   @Patch(':commentId')
-  @UseGuards(AuthGuard())
+  @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()
   async updateComment(
     @Body() updateCommentDTO: UpdateCommentDTO,
@@ -45,7 +45,7 @@ export class CommentController {
   }
 
   @Delete(':commentId')
-  @UseGuards(AuthGuard())
+  @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()
   async delete_comment(@Param('commentId') commentId: string) {
     return this.commentService.deleteComment(commentId);

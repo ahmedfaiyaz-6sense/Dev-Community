@@ -6,23 +6,16 @@ import { UserSchema } from './user.schema';
 import { UserService } from './user.service';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
-import { PassportModule } from '@nestjs/passport';
 import { JWTStrategy } from './jwt.strategy';
+import { JWTRefreshStrategy } from './jwt.refresh.strategy';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    PassportModule.register({ defaultStrategy: 'jwt' }),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-    JwtModule.register({
-      secret: process.env.SECRET,
-      signOptions: {
-        expiresIn: '2 days',
-      },
-    }),
+    JwtModule.register({}),
   ],
 
   controllers: [UserController],
-  providers: [User, UserService, JWTStrategy],
-  exports: [PassportModule],
+  providers: [User, UserService, JWTStrategy, JWTRefreshStrategy],
 })
 export class UserModule {}

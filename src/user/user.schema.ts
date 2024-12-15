@@ -15,6 +15,9 @@ export class User {
 
   @Prop()
   experience: number;
+
+  @Prop()
+  refreshToken: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

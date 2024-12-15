@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -21,19 +22,68 @@ export class UserService {
     @InjectModel(User.name) private readonly userModel: Model<IUser>,
     private jwtService: JwtService,
   ) {}
-
+  public async hashData(data: string): Promise<string> {
+    const salt = await bcrypt.genSalt();
+    const hashedData = await bcrypt.hash(data, salt);
+    return hashedData;
+  }
+  public async verifyHash(
+    hash: string,
+    originalData: string,
+  ): Promise<boolean> {
+    const result = await bcrypt.compare(originalData, hash);
+    return result;
+  }
+  public async getTokens(username: string) {
+    const payload: JWTPayload = { username };
+    const accessToken = await this.jwtService.signAsync(payload, {
+      secret: process.env.SECRET,
+      expiresIn: '15m',
+    });
+    const refreshToken = await this.jwtService.signAsync(payload, {
+      secret: process.env.JWT_REFRESH_SECRET,
+      expiresIn: '7d',
+    });
+    return { accessToken, refreshToken };
+  }
+  public async updateRefreshToken(username, refreshToken: string) {
+    const hashRefreshToken = await this.hashData(refreshToken);
+    await this.userModel.updateOne(
+      { username: username },
+      { refreshToken: hashRefreshToken },
+    );
+  }
+  public async refreshTokens(username: string, refreshToken: string) {
+    const user = await this.userModel.findOne({ username: username });
+    console.log(user);
+    if (!user || !user.refreshToken) {
+      throw new ForbiddenException('Something went wrong');
+    }
+    const isMatched = await this.verifyHash(user.refreshToken, refreshToken);
+    if (isMatched) {
+      const tokens = await this.getTokens(username);
+      await this.updateRefreshToken(username, tokens.refreshToken);
+      return tokens;
+    } else {
+      throw new ForbiddenException('Something went wrong');
+    }
+  }
   public async createUser(user: CreateUserDTO): Promise<IUser> {
     const salt = await bcrypt.genSalt();
     const hashed_password = await bcrypt.hash(user.password, salt);
     user.password = hashed_password;
     try {
+      const tokens = await this.getTokens(user.username);
+      user.refreshToken = tokens.refreshToken;
       const createdUser = await this.userModel.create(user);
+      await this.updateRefreshToken(user.username, user.refreshToken);
+
       const santizedUser = await this.userModel
         .findOne({
           _id: createdUser._id,
         })
         .select('-password');
-      ///console.log(santizedUser);
+      ///console.log(sant
       return santizedUser;
     } catch (error) {
       if (error.code === 11000) {
@@ -45,7 +95,7 @@ export class UserService {
   }
   public async loginUser(
     user: LoginUserDTO,
-  ): Promise<{ access_token: string }> {
+  ): Promise<{ accessToken: string; refreshToken: string }> {
     const found_user = await this.userModel.find({ username: user.username });
     if (!found_user.length) {
       throw new NotFoundException('Username or password is wrong');
@@ -56,13 +106,14 @@ export class UserService {
     } else {
       const username = found_user[0].username;
       //console.log(username);
-      const payload: JWTPayload = {
-        username,
+      const { accessToken, refreshToken } = await this.getTokens(username);
+      return {
+        accessToken,
+        refreshToken,
       };
-      const access_token = await this.jwtService.sign(payload);
-      return { access_token };
     }
   }
+
   public async updateSkillsAndExp(
     updateSkillsAndExpDTO: UpdateSkillsAndExperienceDTO,
     user: IUser,
@@ -119,5 +170,11 @@ export class UserService {
       },
     ];
     return this.userModel.aggregate(pipelines);
+  }
+  public async logout(req: Request) {
+    return this.userModel.updateOne(
+      { username: req['username'] },
+      { refreshToken: null },
+    );
   }
 }

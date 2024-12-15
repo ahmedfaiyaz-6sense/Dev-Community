@@ -14,7 +14,6 @@ import {
 import { CreatePostDTO } from './dto/post.create_post.dto';
 //import { UserPost } from './post.schema';
 import { PostService } from './post.service';
-import { AuthGuard } from '@nestjs/passport';
 import { IUserPost } from './interfaces/post.interface';
 //import { GetPostFilterDto } from './dto/post.filter_post.dto';
 import { IUser } from 'src/user/interfaces/user.interface';
@@ -22,14 +21,15 @@ import { GetUser } from 'src/user/decorators/user.decorator';
 import { ApiBearerAuth, ApiCreatedResponse } from '@nestjs/swagger';
 import { UpdatePostDTO } from './dto/post.update_post.dto';
 import { UserPost } from './post.schema';
+import { AccessTokenGuard } from 'src/user/accessToken.guard';
 
 @Controller('post')
 @ApiBearerAuth()
 export class PostController {
   constructor(private postService: PostService) {}
-  
+
   @Post('/create-post')
-  @UseGuards(AuthGuard())
+  @UseGuards(AccessTokenGuard)
   @ApiCreatedResponse({
     description: 'Post successfully created.',
     type: UserPost,
@@ -43,7 +43,7 @@ export class PostController {
   }
 
   @Patch('/update-post/:postId')
-  @UseGuards(AuthGuard())
+  @UseGuards(AccessTokenGuard)
   async update_post(
     @Body() updatePostDTO: UpdatePostDTO,
     @Param('postId') postId: string,
@@ -52,13 +52,13 @@ export class PostController {
   }
 
   @Delete('/delete-post/:postId')
-  @UseGuards(AuthGuard())
+  @UseGuards(AccessTokenGuard)
   async delete_post(@Param('postId') postId: string) {
     return this.postService.deletePost(postId);
   }
 
   @Get('/user-posts')
-  @UseGuards(AuthGuard())
+  @UseGuards(AccessTokenGuard)
   async get_user_posts(@GetUser() user): Promise<IUserPost[]> {
     return this.postService.getUserPosts(user);
   }

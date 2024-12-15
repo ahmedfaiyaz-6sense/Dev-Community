@@ -1,13 +1,21 @@
-import { Body, Controller, Get, Patch, Post, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Patch,
+  Post,
+  Req,
+  UseGuards,
+} from '@nestjs/common';
 import { CreateUserDTO } from './dto/user.createuser.dto';
 import { IUser } from './interfaces/user.interface';
 import { UserService } from './user.service';
 import { LoginUserDTO } from './dto/user.loginuser.dto';
 import { UpdateSkillsAndExperienceDTO } from './dto/update_skills_and_experience.dto';
 import { GetUser } from './decorators/user.decorator';
-import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth } from '@nestjs/swagger';
-//import { AuthGuard } from '@nestjs/passport';
+import { AccessTokenGuard } from './accessToken.guard';
+import { RefreshTokenGuard } from './refreshToken.guard';
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
@@ -17,7 +25,9 @@ export class UserController {
   }
 
   @Post('/login')
-  loginUser(@Body() user: LoginUserDTO): Promise<{ access_token: string }> {
+  loginUser(
+    @Body() user: LoginUserDTO,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
     return this.userService.loginUser(user);
   }
   @Get('/all-posts')
@@ -26,7 +36,7 @@ export class UserController {
   }
 
   @Patch('/update')
-  @UseGuards(AuthGuard())
+  @UseGuards(AccessTokenGuard)
   @ApiBearerAuth()
   updateSkillsAndXp(
     @Body() updateSkillsAndXp: UpdateSkillsAndExperienceDTO,
@@ -34,7 +44,22 @@ export class UserController {
   ) {
     return this.userService.updateSkillsAndExp(updateSkillsAndXp, user);
   }
+  @UseGuards(AccessTokenGuard)
+  @ApiBearerAuth()
+  @Get('/logout')
+  logout(@Req() req: Request) {
+    return this.userService.logout(req);
+  }
 
+  @UseGuards(RefreshTokenGuard)
+  @ApiBearerAuth()
+  @Get('/refresh')
+  refresh(@Req() req: Request, @GetUser() user) {
+    return this.userService.refreshTokens(
+      user.attributes.username,
+      user.refreshToken,
+    );
+  }
   ///test guard
   /*
   @Get('/test')

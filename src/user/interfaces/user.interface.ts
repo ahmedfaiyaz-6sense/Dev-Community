@@ -5,4 +5,5 @@ export interface IUser extends Document {
   readonly password: string;
   readonly skills: [string];
   readonly experience: number;
+  readonly refreshToken: string;
 }
